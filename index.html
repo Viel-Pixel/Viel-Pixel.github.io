@@ -29,18 +29,18 @@
         }
 
         .spinning-image {
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             position: absolute;
-            top: -120px;
+            top: -170px;
             left: 50%;
             transform: translateX(-50%) scale(0);
-            animation: spin-grow 1s ease-out forwards;
+            animation: spin-grow 0.6s ease-out forwards;
         }
 
         @keyframes spin-grow {
             0% { transform: translateX(-50%) scale(0) rotate(0deg); }
-            100% { transform: translateX(-50%) scale(1) rotate(720deg); }
+            100% { transform: translateX(-50%) scale(1) rotate(1080deg); }
         }
 
         h1 {
@@ -183,9 +183,114 @@
         .popup button:hover {
             background: #ff1e40;
         }
+        
+/* Small No Button */
+#smallNoBtn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    display: none;
+    font-size: 10px;
+    padding: 5px 10px;
+    background: #ff4b5c;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+}
+
+/* Scary Mode */
+.scary-mode {
+    background: black !important;
+    color: red !important;
+    transition: background 0.5s, color 0.5s;
+}
+
+/* Click Button (appears in Scary Mode) */
+#clickBtn {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    padding: 20px 40px;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    animation: pulse 2s infinite alternate;
+    border-radius: 5px;
+}
+
+/* Click Button Animation */
+@keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    100% { transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* Jumpscare Image */
+#jumpscare {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    animation: jumpscare-zoom 0.2s ease-in-out forwards;
+}
+
+/* Jumpscare Zoom Effect */
+@keyframes jumpscare-zoom {
+    0% { transform: translate(-50%, -50%) scale(0); }
+    100% { transform: translate(-50%, -50%) scale(1.2); }
+}
+   /* Failure Bar */
+    #failureBar {
+        display: none;
+        position: fixed;
+        bottom: -100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: black;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        width: 80%;
+        max-width: 400px;
+        animation: slideUp 0.5s ease-in-out forwards;
+    }
+
+    @keyframes slideUp {
+        0% { bottom: -100px; opacity: 0; }
+        100% { bottom: 300px; opacity: 1; }
+    }
+
+    #restartBtn {
+        margin-top: 10px;
+        background: red;
+        color: white;
+        font-size: 18px;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    #restartBtn:hover {
+        background: darkred;
+    }
     </style>
 </head>
 <body>
+    <button id="smallNoBtn" onclick="activateScaryMode()">No</button>
+<button id="clickBtn" onclick="jumpscare()">Click</button>
+<img id="jumpscare" src="https://gifdb.com/images/featured/scary-c42ncebjyhpszw5t.gif" alt="Scary GIF">
 
     <div class="title-container" id="titleContainer">
         <img class="spinning-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5Q20VPt5il0YsinV7a4AbPsR9VMCSeVetF9y6W1kt_RqONiNn1vhaE3vU&s=10" alt="Spinning">
@@ -209,9 +314,14 @@
         <h3 id="popupText"></h3>
         <button onclick="closePopup()">OK</button>
     </div>
-
+    <audio id="screamSound" src="https://github.com/ewanbastapogi/audio-files/raw/refs/heads/main/horror-scream_D_minor.wav" preload="auto"></audio>
+    <div id="failureBar">
+    <p>Bagsak na kita haha</p>
+    <p>Lesson learned:wala</p>
+    <button id="restartBtn" onclick="restartQuiz()">Restart</button>
+</div>
     <script>
-        let noClickCount = 0;
+                let noClickCount = 0;
 
         function startQuiz() {
             document.getElementById("titleContainer").style.opacity = "0"; 
@@ -231,31 +341,63 @@
             document.getElementById("customPopup").style.display = "none";
         }
 
-        function noClicked() {
-            noClickCount++;
 
-            const messages = [
-                "Haha cute, seryoso kasi",
-                "Hoy ano ba nagagalit na ko",
-                "Seryusuhin mo kase yung quiz",
-                "GRRRR"
-            ];
+function noClicked() {
+    noClickCount++;
 
-            const imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROpo1Z_Y_dsdYqbQ-d3LPW88D2P7zmsbbbYw&s";
+    const messages = [
+        "Haha cute, seryoso kasi",
+        "Hoy ano ba nagagalit na ko",
+        "Seryusuhin mo kase yung quiz",
+        "GRRRR"
+    ];
 
-            if (noClickCount < 4) {
-                showPopup(messages[noClickCount - 1], imgUrl);
-            } else {
-                showPopup(messages[3], imgUrl);
-                document.getElementById("noBtn").disabled = true;
-                document.getElementById("lockedText").style.display = "block";
-            }
-        }
+    const imgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROpo1Z_Y_dsdYqbQ-d3LPW88D2P7zmsbbbYw&s";
 
-        function showYesPopup() {
+    if (noClickCount < 4) {
+        showPopup(messages[noClickCount - 1], imgUrl);
+    } else {
+        showPopup(messages[3], imgUrl);
+        document.getElementById("noBtn").disabled = true;
+        document.getElementById("lockedText").style.display = "block";
+        document.getElementById("smallNoBtn").style.display = "block"; // Show small No button
+    }
+}
+
+function activateScaryMode() {
+    document.body.classList.add("scary-mode");
+    document.getElementById("quizContainer").style.display = "none"; // Hide quiz
+    document.getElementById("clickBtn").style.display = "block"; // Show Click button
+    document.getElementById("smallNoBtn").style.display = "none"; // Hide small No button
+}
+
+function jumpscare() {
+    document.getElementById("clickBtn").style.display = "none"; // Hide Click button
+    document.getElementById("jumpscare").style.display = "block"; // Show scary GIF
+}
+
+function showYesPopup() {
             showPopup("", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaejWpi1Ht4GGpC30-RFBSyfQ8d372WYPgoovjsjXPvPDWrV0MEjgDFvd7&s=10");
         }
+        
+function triggerJumpScare() {
+        const scream = document.getElementById("screamSound");
+        scream.play();  // This will play the scream sound
+    }
+        function jumpscare() {
+        document.getElementById("clickBtn").style.display = "none"; // Hide Click button
+        document.getElementById("jumpscare").style.display = "block"; // Show scary GIF
+        document.getElementById("screamSound").play(); // Play scream sound
+
+        setTimeout(() => {
+            document.getElementById("failureBar").style.display = "block";
+        }, 2000); // Show failure bar after 2 seconds
+    }
+
+    function restartQuiz() {
+        location.reload(); // Reload the page to restart the quiz
+    }
     </script>
 
 </body>
-</html>
+    </html>
